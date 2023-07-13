@@ -5,21 +5,21 @@ namespace App\Blocks;
 use Log1x\AcfComposer\Block;
 use StoutLogic\AcfBuilder\FieldsBuilder;
 
-class Example extends Block
+class Hero extends Block
 {
     /**
      * The block name.
      *
      * @var string
      */
-    public $name = 'Example';
+    public $name = 'Hero';
 
     /**
      * The block description.
      *
      * @var string
      */
-    public $description = 'A simple Example block.';
+    public $description = 'A simple Hero block.';
 
     /**
      * The block category.
@@ -34,13 +34,6 @@ class Example extends Block
      * @var string|array
      */
     public $icon = 'editor-ul';
-
-    /**
-     * The block keywords.
-     *
-     * @var array
-     */
-    public $keywords = [];
 
     /**
      * The block post type allow list.
@@ -101,46 +94,28 @@ class Example extends Block
     ];
 
     /**
-     * The block styles.
-     *
-     * @var array
-     */
-    public $styles = [
-        [
-            'name' => 'light',
-            'label' => 'Light',
-            'isDefault' => true,
-        ],
-        [
-            'name' => 'dark',
-            'label' => 'Dark',
-        ]
-    ];
-
-    /**
-     * The block preview example data.
-     *
-     * @var array
-     */
-    public $example = [
-        'items' => [
-            ['item' => 'Item one'],
-            ['item' => 'Item two'],
-            ['item' => 'Item three'],
-        ],
-    ];
-
-    /**
      * Data to be passed to the block before rendering.
      *
      * @return array
      */
     public function with()
     {
+        $background_image_id = get_field('background_image');
+        $background_image_url = '';
+
+        var_dump($background_image_url); // Move this line here
+
+        if (!empty($background_image_id)) {
+            $background_image_url = wp_get_attachment_image_url($background_image_id, 'full');
+        }
+
         return [
-            'items' => $this->items(),
+            'background_image' => $background_image_url,
+            'heading' => get_field('heading'),
         ];
     }
+
+
 
     /**
      * The block field group.
@@ -149,24 +124,13 @@ class Example extends Block
      */
     public function fields()
     {
-        $example = new FieldsBuilder('example');
+        $hero = new FieldsBuilder('hero');
 
-        $example
-            ->addRepeater('items')
-                ->addText('item')
-            ->endRepeater();
+        $hero
+            ->addImage('background_image')
+            ->addText('heading');
 
-        return $example->build();
-    }
-
-    /**
-     * Return the items field.
-     *
-     * @return array
-     */
-    public function items()
-    {
-        return get_field('items') ?: $this->example['items'];
+        return $hero->build();
     }
 
     /**
